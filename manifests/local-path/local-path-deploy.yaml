@@ -51,12 +51,10 @@ metadata:
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: local-path-provisioner
+    matchLabels: { app: local-path-provisioner }
   template:
     metadata:
-      labels:
-        app: local-path-provisioner
+      labels: { app: local-path-provisioner }
     spec:
       serviceAccountName: local-path-provisioner-service-account
       containers:
@@ -67,8 +65,7 @@ spec:
         env:
         - name: POD_NAMESPACE
           valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
+            fieldRef: { fieldPath: metadata.namespace }
         volumeMounts:
         - name: local-path-config
           mountPath: /etc/config/
@@ -76,8 +73,7 @@ spec:
           mountPath: /mnt/k8s-localstorage/local-path
       volumes:
       - name: local-path-config
-        configMap:
-          name: local-path-config
+        configMap: { name: local-path-config }
       - name: local-path
         hostPath:
           path: /mnt/k8s-localstorage/local-path

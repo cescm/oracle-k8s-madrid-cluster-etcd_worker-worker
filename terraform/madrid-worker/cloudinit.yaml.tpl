@@ -7,6 +7,8 @@ packages:
   - cloud-guest-utils
   - gdisk
   - parted
+  - wireguard
+  - qrencode
 
 users:
   - default
@@ -26,7 +28,7 @@ write_files:
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
       apt-get -y upgrade
-      apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release software-properties-common jq
+      apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release software-properties-common jq wireguard qrencode
       swapoff -a
       sed -i '/ swap / s/^/#/' /etc/fstab
       cat >/etc/sysctl.d/k8s.conf <<'EOF'
@@ -45,7 +47,7 @@ write_files:
       curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
       echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' > /etc/apt/sources.list.d/kubernetes.list
       apt-get update
-      apt-get install -y kubelet kubeadm kubectl
+      apt-get install -y kubelet kubeadm kubectl helm
       apt-mark hold kubelet kubeadm kubectl
       echo "bootstrap complete"
   - path: /usr/local/bin/mount-local-storage.sh
@@ -67,9 +69,7 @@ write_files:
         parted -s -a optimal "$DEV_PATH" mkpart primary 0% 100%
         sleep 2
       fi
-      if ! blkid "$PART" >/dev/null 2>&1; then
-        mkfs.ext4 -F "$PART"
-      fi
+      if ! blkid "$PART" >/dev/null 2>&1; then mkfs.ext4 -F "$PART"; fi
       if ! grep -q "$MOUNT_POINT" /etc/fstab; then
         UUID="$(blkid -s UUID -o value "$PART")"
         echo "UUID=${UUID}  $MOUNT_POINT  ext4  defaults,noatime  0  2" >> /etc/fstab

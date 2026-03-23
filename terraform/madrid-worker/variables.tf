@@ -15,3 +15,4 @@ variable "overlay_private_ip" { default = "" }
 variable "allowed_ssh_cidr" { default = "0.0.0.0/0" }
 variable "allowed_k8s_api_cidr" { default = "0.0.0.0/0" }
 variable "allowed_nodeport_cidr" { default = "0.0.0.0/0" }
+variable "allowed_wireguard_cidr" { default = "0.0.0.0/0" }

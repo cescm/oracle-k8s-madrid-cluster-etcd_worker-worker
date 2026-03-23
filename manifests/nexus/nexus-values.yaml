@@ -6,13 +6,14 @@ persistence:
 service:
   type: ClusterIP
 ingress:
-  enabled: false
-resources:
-  requests:
-    cpu: 500m
-    memory: 1Gi
-  limits:
-    cpu: "1"
-    memory: 2Gi
+  enabled: true
+  path: /
+  hostPath: nexus.example.com
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls:
+    - secretName: nexus-tls
+      hosts:
+        - nexus.example.com
 nodeSelector:
   kubernetes.io/hostname: madrid-wk-01
